@@ -1,0 +1,769 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<title>Retro Auto! V1.3</title>
+<style>
+  :root {
+    /* Synthwave / Neon Dealer Theme: Black, Teal, Purple */
+    --bg-base: #05020a;
+    --panel-bg: #0b0514;
+    --panel-border: #23113d;
+    --term-main: #00e5ff; /* Neon Teal */
+    --term-sec: #bd00ff; /* Neon Purple */
+    --term-gold: #ffea00; 
+    --term-red: #ff2a2a; 
+    --text-dim: #735c8c;
+    --text-bright: #e6f7ff;
+
+    --t0-col: #8c9ba5;
+    --t1-col: #4caf50;
+    --t2-col: #00b0ff;
+    --t3-col: #2979ff;
+    --t4-col: #7c4dff;
+    --t5-col: #d500f9;
+    --t6-col: #ff9100;
+    --t7-col: #ff3d00;
+    --t8-col: #ff1744;
+    --t9-col: #00e5ff;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; -webkit-tap-highlight-color: transparent; }
+
+  html, body {
+    width: 100%; height: 100%; background: var(--bg-base); color: var(--text-bright);
+    display: flex; flex-direction: column; overflow: hidden;
+  }
+
+  /* Scanline / Grid Effect */
+  body::before {
+    content: " "; display: block; position: fixed; top: 0; left: 0; bottom: 0; right: 0;
+    background: linear-gradient(rgba(0, 229, 255, 0.02) 1px, transparent 1px), linear-gradient(90deg, rgba(189, 0, 255, 0.02) 1px, transparent 1px);
+    background-size: 20px 20px; z-index: 998; pointer-events: none;
+  }
+
+  header {
+    flex-shrink: 0; background: #080311; border-bottom: 2px solid var(--term-sec);
+    padding: 10px 12px; display: flex; flex-direction: column; gap: 8px; z-index: 100;
+  }
+  .header-top { display: flex; justify-content: space-between; align-items: center; }
+  .os-brand { font-size: 16px; font-weight: 900; color: var(--term-main); text-shadow: 0 0 10px rgba(0, 229, 255, 0.6); letter-spacing: 1px; font-style: italic;}
+  .os-brand span { color: var(--term-sec); text-shadow: 0 0 10px rgba(189, 0, 255, 0.6); }
+
+  .hud-stats { display: flex; gap: 6px; overflow-x: auto; white-space: nowrap; padding-bottom: 2px; -webkit-overflow-scrolling: touch; }
+  .hud-stats::-webkit-scrollbar { display: none; }
+  .hud-tag { background: rgba(0,0,0,0.8); border: 1px solid var(--panel-border); padding: 6px 10px; border-radius: 4px; font-size: 11px; flex-shrink: 0; font-weight:bold; }
+  
+  nav {
+    flex-shrink: 0; display: flex; background: var(--panel-bg); border-bottom: 1px solid var(--panel-border);
+    overflow-x: auto; white-space: nowrap; z-index: 99; -webkit-overflow-scrolling: touch;
+  }
+  nav::-webkit-scrollbar { display: none; }
+  .nav-btn {
+    flex: 0 0 auto; padding: 14px 16px; background: transparent; border: none; border-right: 1px solid var(--panel-border);
+    color: var(--text-dim); font-size: 11px; text-transform: uppercase; font-weight: 800; cursor: pointer; letter-spacing: 1px;
+  }
+  .nav-btn.active { background: rgba(0, 229, 255, 0.1); color: var(--term-main); border-bottom: 2px solid var(--term-main); }
+
+  main { flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch; padding: 12px; padding-bottom: 70px; position:relative; z-index:10; }
+  .view-tab { display: none; width: 100%; flex-direction: column; gap: 12px; }
+  .view-tab.active { display: flex; }
+
+  .panel { background: rgba(11, 5, 20, 0.85); border: 1px solid var(--panel-border); border-radius: 6px; padding: 14px; display: flex; flex-direction: column; }
+  .panel-header {
+    font-size: 13px; font-weight: 900; color: var(--term-sec); text-transform: uppercase; letter-spacing: 1px;
+    padding-bottom: 8px; margin-bottom: 10px; border-bottom: 1px dashed var(--panel-border); display: flex; flex-direction: column; gap: 6px;
+  }
+  .panel-header-row { display: flex; justify-content: space-between; align-items: center; width: 100%; }
+
+  button.action-btn {
+    background: rgba(0, 229, 255, 0.05); border: 1px solid var(--term-main); color: var(--term-main);
+    padding: 10px 14px; cursor: pointer; text-transform: uppercase; font-size: 11px; font-weight: 900; border-radius: 4px; transition: 0.1s; letter-spacing:0.5px;
+  }
+  button.action-btn:active { background: var(--term-main); color: #000; box-shadow: 0 0 15px var(--term-main); }
+  button.action-btn:disabled { border-color: #23113d; color: #4a3366; background: transparent; box-shadow: none; cursor:not-allowed; }
+  
+  button.purple-btn { border-color: var(--term-sec); color: var(--term-sec); background: rgba(189, 0, 255, 0.05); }
+  button.purple-btn:active { background: var(--term-sec); color: #000; box-shadow: 0 0 15px var(--term-sec); }
+  
+  button.red-btn { border-color: var(--term-red); color: var(--term-red); background: rgba(255, 42, 42, 0.05); }
+  button.red-btn:active { background: var(--term-red); color: #fff; box-shadow: 0 0 15px var(--term-red); }
+
+  button.gold-btn { border-color: var(--term-gold); color: var(--term-gold); background: rgba(255, 234, 0, 0.05); }
+  button.gold-btn:active { background: var(--term-gold); color: #000; box-shadow: 0 0 15px var(--term-gold); }
+
+  .hangar-grid { display: grid; grid-template-columns: 1fr; gap: 12px; width: 100%; }
+  @media(min-width: 600px) { .hangar-grid { grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); } }
+  .suit-card { background: #05020a; border: 1px solid #23113d; border-radius: 6px; padding: 14px; display: flex; flex-direction: column; gap: 8px; position: relative; }
+  
+  .auction-grid { display: grid; grid-template-columns: 1fr; gap: 12px; }
+  .auction-slot { background: #05020a; border: 1px solid var(--panel-border); padding: 14px; border-radius: 6px; display: flex; flex-direction: column; gap: 8px; }
+  .auction-timer-bg { width: 100%; height: 8px; background: #0b0514; border: 1px solid var(--term-main); border-radius:4px; overflow:hidden;}
+  .auction-timer-bar { height: 100%; width: 100%; background: var(--term-main); transition: width 0.1s linear; }
+
+  .combat-log { height: 200px; background: #000; border: 1px solid var(--panel-border); border-radius:4px; padding: 10px; overflow-y: auto; font-size: 11px; line-height: 1.5; font-family: monospace; }
+  .fraction-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
+
+  #toast-rack { position: fixed; bottom: 20px; left: 12px; right: 12px; display: flex; flex-direction: column; gap: 8px; z-index: 1000; pointer-events: none; }
+  .toast { background: #0b0514; border-left: 4px solid var(--term-main); color: var(--text-bright); padding: 12px 14px; font-size: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.9); animation: slideIn 0.2s, fadeOut 0.4s 3.2s forwards; pointer-events: auto; font-weight: bold; }
+  @keyframes slideIn { from { transform: translateY(40px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+  @keyframes fadeOut { to { opacity: 0; transform: translateY(-10px); } }
+  
+  .entity-title { font-weight: 900; font-style: italic; font-size:14px; }
+  .stat-block { font-family: monospace; font-size:11px;}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-top">
+    <div class="os-brand">RETRO <span>AUTO! V1.3</span></div>
+    <div style="display:flex; gap: 6px; align-items:center;">
+      <button class="action-btn" style="padding:6px 10px; font-size:9px;" onclick="saveGame()">SAVE</button>
+      <button class="action-btn" style="padding:6px 10px; font-size:9px;" onclick="loadGame()">LOAD</button>
+      <button class="action-btn purple-btn" style="padding:6px 10px; font-size:9px;" onclick="godMode()">CARTEL BOSS</button>
+    </div>
+  </div>
+  <div class="hud-stats">
+    <div class="hud-tag">BANK: <span id="hud-credits" style="color:var(--term-main); font-size:12px;">$0</span></div>
+    <div class="hud-tag">FRANCHISE: <span id="hud-ascension" style="color:var(--term-sec); font-size:12px;">LVL 0</span></div>
+    <div class="hud-tag">GARAGE: <span id="hud-count" style="color:#fff; font-size:12px;">0</span></div>
+  </div>
+</header>
+
+<nav>
+  <button class="nav-btn active" onclick="setTab('market')">Daily Market</button>
+  <button class="nav-btn" onclick="setTab('cargo')">Cargo Shipments</button>
+  <button class="nav-btn" onclick="setTab('hangar')">The Garage</button>
+  <button class="nav-btn" onclick="setTab('auction')">Live Auctions</button>
+  <button class="nav-btn" onclick="setTab('upgrades')">Empire Upgrades</button>
+</nav>
+
+<main>
+
+  <!-- TAB 1: REVOLVING MARKET -->
+  <div id="tab-market" class="view-tab active">
+    <div class="panel">
+      <div class="panel-header">
+        <div class="panel-header-row">
+          <span>Underground Auto Market</span>
+          <span style="font-size:10px; color:var(--term-main);">REFRESH: <span id="market-timer" style="font-size:14px; font-weight:bold;">10.0</span>s</span>
+        </div>
+      </div>
+      <p style="font-size:11px; color:var(--text-dim); margin-bottom:12px;">5 vehicles drop every 10 seconds. Buy low, hold, and send to the auction blocks.</p>
+      
+      <div id="revolving-market-grid" class="hangar-grid"></div>
+    </div>
+  </div>
+
+  <!-- TAB 2: CARGO SHIPMENTS (GACHA) -->
+  <div id="tab-cargo" class="view-tab">
+    <div class="panel">
+      <div class="panel-header">Syndicate Cargo Shipments</div>
+      <p style="font-size:11px; color:var(--text-dim); margin-bottom:14px;">Smuggle shipping containers. Drop rates: 50% / 30% / 15% / 5% across the 4 ascending vehicle classes of each bracket.</p>
+      
+      <div style="border:1px solid var(--panel-border); padding:10px; margin-bottom:10px; border-radius:4px;">
+        <div style="font-size:11px; color:var(--text-bright); font-weight:bold; margin-bottom:8px;">DOMESTIC FREIGHT [Classes I - IV]</div>
+        <div style="display:flex; gap:8px;"><button class="action-btn" style="flex:1;" onclick="buyCargo(0, 1)">Import 1 ($5K)</button><button class="action-btn" style="flex:1;" onclick="buyCargo(0, 3)">Import 3 ($15K)</button></div>
+      </div>
+      <div style="border:1px solid var(--panel-border); padding:10px; margin-bottom:10px; border-radius:4px;">
+        <div style="font-size:11px; color:var(--term-main); font-weight:bold; margin-bottom:8px;">TUNER IMPORTS [Classes III - VI]</div>
+        <div style="display:flex; gap:8px;"><button class="action-btn" style="flex:1;" onclick="buyCargo(1, 1)">Import 1 ($25K)</button><button class="action-btn" style="flex:1;" onclick="buyCargo(1, 3)">Import 3 ($75K)</button></div>
+      </div>
+      <div style="border:1px solid var(--panel-border); padding:10px; margin-bottom:10px; border-radius:4px;">
+        <div style="font-size:11px; color:var(--term-sec); font-weight:bold; margin-bottom:8px;">BLACK MARKET CRATES [Classes V - VIII]</div>
+        <div style="display:flex; gap:8px;"><button class="action-btn purple-btn" style="flex:1;" onclick="buyCargo(2, 1)">Import 1 ($100K)</button><button class="action-btn purple-btn" style="flex:1;" onclick="buyCargo(2, 3)">Import 3 ($300K)</button></div>
+      </div>
+      <div style="border:1px solid var(--panel-border); padding:10px; margin-bottom:20px; border-radius:4px;">
+        <div style="font-size:11px; color:var(--term-gold); font-weight:bold; margin-bottom:8px;">APEX HORIZON CONTAINERS [Classes VII - X]</div>
+        <div style="display:flex; gap:8px;"><button class="action-btn gold-btn" style="flex:1;" onclick="buyCargo(3, 1)">Import 1 ($500K)</button><button class="action-btn gold-btn" style="flex:1;" onclick="buyCargo(3, 3)">Import 3 ($1.5M)</button></div>
+      </div>
+      
+      <div class="panel-header">10 Vehicle Classes Overview (80,000 Blueprints)</div>
+      <div id="tier-breakdown-grid" style="display:grid; grid-template-columns: 1fr 1fr; gap:6px; font-size:10px; text-align:center;"></div>
+    </div>
+  </div>
+
+  <!-- TAB 3: THE GARAGE -->
+  <div id="tab-hangar" class="view-tab">
+    <div class="panel">
+      <div class="panel-header">
+        <div class="panel-header-row">
+          <span>Dealer Garage</span>
+          <div style="display:flex; gap:4px;">
+            <button class="action-btn purple-btn" style="padding:6px 8px; font-size:9px;" onclick="sortHangar('value')">Sort: VAL</button>
+            <button class="action-btn purple-btn" style="padding:6px 8px; font-size:9px;" onclick="sortHangar('tier')">Sort: TIER</button>
+          </div>
+        </div>
+        <button class="action-btn" style="font-size:11px; width:100%; padding:12px; margin-bottom:10px;" onclick="fillAuctions()">Auto-Fill Auction Blocks (5 Slots)</button>
+        <div style="font-size:10px; color:var(--text-dim); margin-bottom:6px; font-weight:bold;">WHOLESALE LIQUIDATION (50% Base Val):</div>
+        <div class="fraction-row">
+          <button class="action-btn red-btn" onclick="quickSell(0)">Class I</button>
+          <button class="action-btn red-btn" onclick="quickSell(1)">Class II &lt;</button>
+          <button class="action-btn red-btn" onclick="quickSell(2)">Class III &lt;</button>
+          <button class="action-btn red-btn" onclick="quickSell(3)">Class IV &lt;</button>
+        </div>
+      </div>
+      <div id="hangar-grid" class="hangar-grid"></div>
+    </div>
+  </div>
+
+  <!-- TAB 4: LIVE AUCTIONS -->
+  <div id="tab-auction" class="view-tab">
+    <div class="panel">
+      <div class="panel-header">
+        <div class="panel-header-row">
+          <span>High-Stakes Bidding</span>
+          <span style="font-size:11px; color:var(--term-sec);"><span id="auction-count">0</span>/5 LANES</span>
+        </div>
+      </div>
+      <button class="action-btn purple-btn" style="margin-bottom:12px; padding:12px;" onclick="fillAuctions()">Pull from Garage</button>
+      <p style="font-size:11px; color:var(--text-dim); margin-bottom:10px;">Auctions last 20s. Sniping in the last 1s resets the clock to 3s. Bids now start at 90% Base Value!</p>
+      
+      <div id="auction-idle" style="text-align:center; padding: 30px; color:var(--text-dim); font-size:12px; font-weight:bold;">The auction lanes are empty.</div>
+      <div id="auction-board" class="auction-grid"></div>
+    </div>
+  </div>
+
+  <!-- TAB 5: ENDLESS UPGRADES & PRESTIGE -->
+  <div id="tab-upgrades" class="view-tab">
+    <div class="panel">
+      <div class="panel-header">Syndicate Empire Upgrades</div>
+      <p style="font-size:11px; color:var(--text-dim); margin-bottom:14px;">Endless investments. Cost scales exponentially.</p>
+
+      <div style="display:flex; flex-direction:column; gap:10px; margin-bottom:20px;">
+        <div style="background:var(--bg-base); border:1px solid var(--panel-border); padding:12px; border-radius:4px;">
+          <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
+            <span style="color:var(--term-main); font-weight:bold; font-size:12px;">Showroom Detailing</span>
+            <span style="color:var(--text-dim); font-size:11px;">Lvl <span id="upg-val-lvl">0</span> (+<span id="upg-val-pct">0</span>%)</span>
+          </div>
+          <div style="font-size:10px; color:var(--text-dim); margin-bottom:10px;">Permanently increases the base value of ALL generated vehicles by 2% per level.</div>
+          <button id="btn-upg-val" class="action-btn" style="width:100%;" onclick="buyUpgrade('value')">Upgrade ($<span id="upg-val-cost">10000</span>)</button>
+        </div>
+
+        <div style="background:var(--bg-base); border:1px solid var(--panel-border); padding:12px; border-radius:4px;">
+          <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
+            <span style="color:var(--term-sec); font-weight:bold; font-size:12px;">Underworld Contacts</span>
+            <span style="color:var(--text-dim); font-size:11px;">Lvl <span id="upg-disc-lvl">0</span> (-<span id="upg-disc-pct">0</span>%)</span>
+          </div>
+          <div style="font-size:10px; color:var(--text-dim); margin-bottom:10px;">Reduces the purchase price of vehicles in the Revolving Market by 2% per level.</div>
+          <button id="btn-upg-disc" class="action-btn purple-btn" style="width:100%;" onclick="buyUpgrade('discount')">Upgrade ($<span id="upg-disc-cost">15000</span>)</button>
+        </div>
+      </div>
+
+      <div class="panel-header" style="color:var(--term-red); border-color:var(--term-red);">Franchise Expansion (Prestige)</div>
+      <p style="font-size:11px; color:var(--text-dim); margin-bottom:10px;">Sell your current empire. Resets Bank and Garage. Keeps Upgrades. Permanently grants +5% Global Value and -5% Market Cost per Franchise Level.</p>
+      <button class="action-btn red-btn" style="padding:14px; font-size:12px;" onclick="prestige()">Expand Franchise (Req: $<span id="prestige-req">100K</span>)</button>
+    </div>
+  </div>
+
+</main>
+
+<div id="toast-rack"></div>
+
+<script>
+  /* ================= 80,000 PROCEDURAL CAR ROSTER ================= */
+  const PREFIXES = ["Turbo","Aero","Hyper","Eco","V-Spec","Street","Drift","Custom","Stock","Concept","Neon","Midnight","Apex","Phantom","Rogue","Syndicate","Elite","Carbon","Billet","Forged"];
+  const BRANDS = ["Nissota","Honmitsu","Ferrenzo","Lambini","Bugarri","Astoria","Chevell","Fordus","MacLira","Porsh","Toyonda","Audia","Mercia","BWM","Suba","Mitzu","Dodgey","Mazerati","Pagania","Koenigse"];
+  const MODELS = ["Civia","Suprax","Skyline","Nine-Ten","Gallardo","Chironx","Musto","Camara","Vipera","Corvetta","Senato","Diabola","Aventadoro","Huracano","EvoX","WRXy","GTRx","F40x","P1x","LaFerrenzo"];
+  const SUFFIXES = ["GT","RS","Type-R","Type-S","STI","Evo","Nismo","AMG","M","Performante"]; 
+
+  const TIERS = [
+    { tier: 1, name: "Class I: Beater", color: "var(--t0-col)", mult: 1.0, minBase: 500 },
+    { tier: 2, name: "Class II: Commuter", color: "var(--t1-col)", mult: 2.5, minBase: 1250 },
+    { tier: 3, name: "Class III: Sport", color: "var(--t2-col)", mult: 6.0, minBase: 3000 },
+    { tier: 4, name: "Class IV: Tuner", color: "var(--t3-col)", mult: 15.0, minBase: 7500 },
+    { tier: 5, name: "Class V: Muscle", color: "var(--t4-col)", mult: 40.0, minBase: 20000 },
+    { tier: 6, name: "Class VI: Supercar", color: "var(--t5-col)", mult: 100.0, minBase: 50000 },
+    { tier: 7, name: "Class VII: Hypercar", color: "var(--t6-col)", mult: 250.0, minBase: 125000 },
+    { tier: 8, name: "Class VIII: Track Demon", color: "var(--t7-col)", mult: 700.0, minBase: 350000 },
+    { tier: 9, name: "Class IX: Concept", color: "var(--t8-col)", mult: 2000.0, minBase: 1000000 },
+    { tier: 10, name: "Class X: Horizon Apex", color: "var(--t9-col)", mult: 5500.0, minBase: 2750000 }
+  ];
+
+  let State = {
+    credits: 5000,
+    prestige: 0,
+    sortMode: 'value',
+    hangar: [],
+    marketCars: [],
+    marketTimer: 10.0,
+    auctions: [],
+    upgrades: {
+        valueLvl: 0,
+        discountLvl: 0
+    }
+  };
+
+  let globalInterval = null;
+
+  /* ================= UTILS & MATH ================= */
+  function fmt(n) {
+    if(n >= 1e15) return (n/1e15).toFixed(2) + 'Q';
+    if(n >= 1e12) return (n/1e12).toFixed(2) + 'T';
+    if(n >= 1e9) return (n/1e9).toFixed(2) + 'B';
+    if(n >= 1e6) return (n/1e6).toFixed(2) + 'M';
+    if(n >= 1e3) return (n/1e3).toFixed(1) + 'K';
+    return Math.floor(n).toLocaleString(); 
+  }
+  
+  function toast(msg) {
+    const rack = document.getElementById('toast-rack');
+    const el = document.createElement('div'); el.className = 'toast'; el.innerHTML = msg;
+    rack.appendChild(el); setTimeout(() => el.remove(), 3200);
+  }
+
+  function godMode() { 
+    State.credits += 1000000000; 
+    toast("CARTEL BOSS OVERRIDE: +$1 BILLION"); 
+    updateHUD(); 
+  }
+
+  function saveGame() {
+    localStorage.setItem('retroAutoV1_3', JSON.stringify(State));
+    toast("Dealer ledger saved.");
+  }
+  
+  function loadGame() {
+    let saved = localStorage.getItem('retroAutoV1_3');
+    if(saved) {
+      State = JSON.parse(saved);
+      if(!State.marketCars) State.marketCars = [];
+      if(!State.upgrades) State.upgrades = {valueLvl:0, discountLvl:0};
+      if(!State.marketTimer) State.marketTimer = 10.0;
+      updateHUD(); renderHangar(); renderMarket(); renderAuctions(); renderUpgrades();
+      toast("Dealer ledger restored.");
+    } else {
+      toast("No save data found.");
+    }
+  }
+
+  /* ================= PROCEDURAL GENERATION ================= */
+  function getValueMultiplier() {
+      let upgMult = 1.0 + (State.upgrades.valueLvl * 0.02);
+      let presMult = 1.0 + (State.prestige * 0.05);
+      return upgMult * presMult;
+  }
+
+  function getDiscountMultiplier() {
+      let discount = (State.upgrades.discountLvl * 0.02) + (State.prestige * 0.05);
+      if(discount > 0.7) discount = 0.7; 
+      return 0.8 * (1.0 - discount); 
+  }
+
+  function createCar(tIdx) {
+      let p = PREFIXES[Math.floor(Math.random() * PREFIXES.length)];
+      let b = BRANDS[Math.floor(Math.random() * BRANDS.length)];
+      let m = MODELS[Math.floor(Math.random() * MODELS.length)];
+      let s = SUFFIXES[Math.floor(Math.random() * SUFFIXES.length)];
+
+      let tData = TIERS[tIdx];
+
+      let rawBase = 500 + Math.floor(Math.random() * 500);
+      let baseVal = Math.floor(rawBase * tData.mult);
+      
+      let valMult = getValueMultiplier();
+      let finalValue = Math.floor(baseVal * valMult);
+      let marketCost = Math.max(100, Math.floor(finalValue * getDiscountMultiplier()));
+
+      return {
+          uid: Date.now() + Math.random().toString(36).substring(2,8),
+          name: `${p} ${b} ${m} ${s}`,
+          tierIndex: tIdx,
+          tierName: tData.name,
+          tierColor: tData.color,
+          value: finalValue,
+          cost: marketCost
+      };
+  }
+
+  /* ================= HUD & TABS ================= */
+  function setTab(tabName) {
+    document.querySelectorAll('.nav-btn').forEach(b => { b.classList.remove('active'); if(b.getAttribute('onclick').includes(tabName)) b.classList.add('active'); });
+    document.querySelectorAll('.view-tab').forEach(t => t.classList.remove('active'));
+    const target = document.getElementById(`tab-${tabName}`); if(target) target.classList.add('active');
+    
+    if(tabName === 'hangar') renderHangar();
+    if(tabName === 'market') renderMarket();
+    if(tabName === 'upgrades') renderUpgrades();
+  }
+
+  function updateHUD() {
+    document.getElementById('hud-credits').innerText = `$${fmt(State.credits)}`;
+    document.getElementById('hud-ascension').innerText = `LVL ${State.prestige}`;
+    document.getElementById('hud-count').innerText = State.hangar.length;
+  }
+
+  /* ================= REVOLVING MARKET ================= */
+  function refreshMarket() {
+      State.marketCars = [];
+      for(let i=0; i<5; i++) {
+          let roll = Math.random() * 100;
+          let tIdx = 0;
+          if(roll > 40) tIdx = 1;
+          if(roll > 65) tIdx = 2;
+          if(roll > 80) tIdx = 3;
+          if(roll > 90) tIdx = 4;
+          if(roll > 95) tIdx = 5;
+          if(roll > 97.5) tIdx = 6;
+          if(roll > 99) tIdx = 7;
+          if(roll > 99.7) tIdx = 8;
+          if(roll > 99.9) tIdx = 9;
+          
+          State.marketCars.push(createCar(tIdx));
+      }
+      renderMarket();
+  }
+
+  function renderMarket() {
+      const grid = document.getElementById('revolving-market-grid');
+      if(!grid) return;
+      grid.innerHTML = '';
+
+      State.marketCars.forEach((c, idx) => {
+          const card = document.createElement('div');
+          card.className = `suit-card`;
+          card.style.borderColor = c.tierColor;
+          card.innerHTML = `
+            <div class="stat-block" style="display:flex; justify-content:space-between;">
+              <span style="color:${c.tierColor}; font-weight:bold;">${c.tierName.split(':')[0]}</span>
+            </div>
+            <div class="entity-title" style="color:${c.tierColor};">${c.name}</div>
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-top:6px;">
+              <div>
+                <div class="stat-block" style="font-size:10px; color:var(--text-dim);">Est Val: $${fmt(c.value)}</div>
+                <div class="stat-block" style="font-size:12px; color:var(--term-main); font-weight:bold;">Price: $${fmt(c.cost)}</div>
+              </div>
+              <button class="action-btn" style="padding:8px 16px; font-size:11px;" onclick="buyCar(${idx})">BUY</button>
+            </div>
+          `;
+          grid.appendChild(card);
+      });
+  }
+
+  function buyCar(idx) {
+      let c = State.marketCars[idx];
+      if(!c) return;
+      if(State.credits < c.cost) {
+          toast("Insufficient funds.");
+          return;
+      }
+      State.credits -= c.cost;
+      State.hangar.push(c);
+      State.marketCars.splice(idx, 1);
+      toast(`Purchased: ${c.name}`);
+      updateHUD();
+      renderMarket();
+  }
+
+  /* ================= CARGO SHIPMENTS (GACHA) ================= */
+  function buyCargo(bIdx, count) {
+    let costs = [5000, 25000, 100000, 500000];
+    let cost = costs[bIdx] * count;
+    if(State.credits < cost) { toast("Insufficient funds."); return; }
+    State.credits -= cost;
+    for(let i=0; i<count; i++) rollCargoCar(bIdx);
+    updateHUD();
+    toast(`Imported ${count}x Cargo Containers.`);
+  }
+
+  function rollCargoCar(bIdx) {
+    let tiers = [];
+    if(bIdx === 0) tiers = [0,1,2,3];
+    if(bIdx === 1) tiers = [2,3,4,5];
+    if(bIdx === 2) tiers = [4,5,6,7];
+    if(bIdx === 3) tiers = [6,7,8,9];
+
+    let roll = Math.random() * 100;
+    let cTier = tiers[0];
+    if(roll > 50) cTier = tiers[1];
+    if(roll > 80) cTier = tiers[2];
+    if(roll > 95) cTier = tiers[3];
+
+    let newCar = createCar(cTier);
+    State.hangar.push(newCar);
+  }
+
+  /* ================= GARAGE ================= */
+  function sortHangar(mode) { State.sortMode = mode; renderHangar(); }
+
+  function renderHangar() {
+    const grid = document.getElementById('hangar-grid'); 
+    if(!grid) return;
+    grid.innerHTML = '';
+    
+    if(State.hangar.length === 0) { 
+        grid.innerHTML = `<div style="text-align:center; padding: 20px; color: var(--text-dim); font-size:12px; font-weight:bold;">Garage is empty. Hit the market or import cargo.</div>`; 
+        return; 
+    }
+
+    let sorted = [...State.hangar];
+    if(State.sortMode === 'value') sorted.sort((a,b) => b.value - a.value);
+    if(State.sortMode === 'tier') sorted.sort((a,b) => b.tierIndex - a.tierIndex);
+
+    sorted.forEach(s => {
+      const card = document.createElement('div');
+      card.className = `suit-card`;
+      card.style.borderColor = s.tierColor;
+      card.innerHTML = `
+        <div class="stat-block" style="display:flex; justify-content:space-between;">
+            <span style="color:${s.tierColor}; font-weight:bold;">${s.tierName.split(':')[0]}</span>
+        </div>
+        <div class="entity-title" style="color:${s.tierColor};">${s.name}</div>
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-top:6px;">
+          <span class="stat-block" style="font-size:12px; color:var(--term-main); font-weight:bold;">VAL: $${fmt(s.value)}</span>
+          <div style="display:flex; flex-wrap:wrap; gap:6px; justify-content:flex-end;">
+            <button class="action-btn purple-btn" onclick="initAuction('${s.uid}', event)">Auction</button>
+            <button class="action-btn red-btn" onclick="sellCar('${s.uid}', event)">Wholesale</button>
+          </div>
+        </div>
+      `;
+      grid.appendChild(card);
+    });
+  }
+
+  function sellCar(uid, e) {
+    let idx = State.hangar.findIndex(s => s.uid === uid);
+    if(idx > -1) { 
+      if(e) { let card = e.target.closest('.suit-card'); if(card) card.remove(); }
+      let sellVal = Math.floor(State.hangar[idx].value * 0.50); 
+      State.credits += sellVal; 
+      State.hangar.splice(idx, 1); 
+      toast(`Liquidated for $${fmt(sellVal)}.`); 
+      updateHUD(); 
+      renderHangar(); 
+    }
+  }
+
+  function quickSell(maxTier) {
+    let toSell = State.hangar.filter(s => s.tierIndex <= maxTier);
+    if(toSell.length === 0) { toast("No matching vehicles available."); return; }
+    let total = 0; 
+    toSell.forEach(s => total += Math.floor(s.value * 0.50));
+    State.hangar = State.hangar.filter(s => s.tierIndex > maxTier);
+    State.credits += total; 
+    toast(`Liquidated ${toSell.length} vehicles for +$${fmt(total)}.`); 
+    updateHUD(); 
+    renderHangar();
+  }
+
+  /* ================= AUCTION BLOCK ================= */
+  function initAuction(uid, e) {
+    if(State.auctions.length >= 5) { toast("Auction lanes full (Max 5)."); return; }
+    let sIdx = State.hangar.findIndex(s => s.uid === uid); if(sIdx === -1) return;
+    
+    if(e) { let card = e.target.closest('.suit-card'); if(card) card.remove(); }
+    
+    let suit = State.hangar[sIdx]; 
+    State.hangar.splice(sIdx, 1);
+
+    State.auctions.push({ 
+        suit: suit, 
+        baseVal: suit.value, 
+        timer: 20.0, 
+        currentBid: Math.floor(suit.value * 0.90), // V1.3 FIX: Start bidding at 90% value
+        log: [] 
+    });
+    updateHUD(); 
+    renderAuctions(); 
+    toast("Sent to Auction Block.");
+  }
+
+  function fillAuctions() {
+    let available = 5 - State.auctions.length;
+    if(available <= 0) { toast("Auction lanes are already full."); return; }
+    let candidates = State.hangar.slice().sort((a,b) => a.value - b.value);
+    if(candidates.length === 0) { toast("Garage is empty."); return; }
+
+    let toList = candidates.slice(0, available);
+    toList.forEach(s => {
+      let idx = State.hangar.findIndex(x => x.uid === s.uid); 
+      State.hangar.splice(idx, 1);
+      State.auctions.push({ 
+          suit: s, 
+          baseVal: s.value, 
+          timer: 20.0, 
+          currentBid: Math.floor(s.value * 0.90), // V1.3 FIX: Start bidding at 90% value
+          log: [] 
+      });
+    });
+    updateHUD(); 
+    renderHangar(); 
+    renderAuctions(); 
+    toast("Auction lanes filled.");
+  }
+
+  function renderAuctions() {
+    const board = document.getElementById('auction-board');
+    if(!board) return;
+    document.getElementById('auction-count').innerText = State.auctions.length; 
+    board.innerHTML = '';
+
+    if(State.auctions.length === 0) {
+        document.getElementById('auction-idle').style.display = 'block';
+        return;
+    } else {
+        document.getElementById('auction-idle').style.display = 'none';
+    }
+
+    State.auctions.forEach((a) => {
+      let pct = (a.timer / 20.0) * 100; 
+      let htmlLog = a.log.map(l => `<div>${l}</div>`).join('');
+      
+      board.innerHTML += `
+        <div class="auction-slot">
+          <div style="display:flex; justify-content:space-between; align-items:flex-end;">
+            <div>
+              <div class="entity-title" style="font-size:13px; color:${a.suit.tierColor};">${a.suit.name}</div>
+              <div class="stat-block" style="font-size:10px; color:var(--text-dim); margin-top:2px;">VAL: $${fmt(a.baseVal)}</div>
+            </div>
+            <div style="text-align:right;">
+              <div style="font-size:9px; color:var(--text-dim); font-weight:bold;">BID [${a.timer.toFixed(1)}s]</div>
+              <div class="stat-block" style="font-size:16px; font-weight:bold; color:var(--term-main);">$${fmt(a.currentBid)}</div>
+            </div>
+          </div>
+          <div class="auction-timer-bg"><div class="auction-timer-bar" style="width:${pct}%; background:${a.timer <= 3.0 ? 'var(--term-red)' : 'var(--term-main)'}"></div></div>
+          <div class="stat-block" style="background:#000; padding:6px; font-size:10px; height:50px; overflow:hidden; border-radius:4px; border:1px solid #23113d;">${htmlLog}</div>
+        </div>
+      `;
+    });
+  }
+
+  /* ================= UPGRADES & PRESTIGE ================= */
+  function getUpgradeCost(type) {
+      if(type === 'value') return Math.floor(10000 * Math.pow(1.5, State.upgrades.valueLvl));
+      if(type === 'discount') return Math.floor(15000 * Math.pow(1.6, State.upgrades.discountLvl));
+      return 999999999;
+  }
+
+  function renderUpgrades() {
+      let vCost = getUpgradeCost('value');
+      let dCost = getUpgradeCost('discount');
+
+      document.getElementById('upg-val-lvl').innerText = State.upgrades.valueLvl;
+      document.getElementById('upg-val-pct').innerText = State.upgrades.valueLvl * 2;
+      document.getElementById('upg-val-cost').innerText = fmt(vCost);
+      document.getElementById('btn-upg-val').disabled = State.credits < vCost;
+
+      document.getElementById('upg-disc-lvl').innerText = State.upgrades.discountLvl;
+      document.getElementById('upg-disc-pct').innerText = State.upgrades.discountLvl * 2;
+      document.getElementById('upg-disc-cost').innerText = fmt(dCost);
+      document.getElementById('btn-upg-disc').disabled = State.credits < dCost;
+
+      let pReq = 100000 * Math.pow(10, State.prestige);
+      document.getElementById('prestige-req').innerText = fmt(pReq);
+  }
+
+  function buyUpgrade(type) {
+      let cost = getUpgradeCost(type);
+      if(State.credits < cost) return;
+      State.credits -= cost;
+      if(type === 'value') State.upgrades.valueLvl++;
+      if(type === 'discount') State.upgrades.discountLvl++;
+      updateHUD();
+      renderUpgrades();
+  }
+
+  function prestige() {
+      let pReq = 100000 * Math.pow(10, State.prestige);
+      if(State.credits < pReq) {
+          toast(`You need $${fmt(pReq)} to expand the franchise.`);
+          return;
+      }
+      
+      State.prestige++;
+      State.credits = 5000;
+      State.hangar = [];
+      State.auctions = [];
+      refreshMarket();
+      
+      toast(`FRANCHISE EXPANDED! Level ${State.prestige}. Global Multipliers Increased!`);
+      updateHUD();
+      setTab('market');
+  }
+
+  /* ================= GAME LOOP (MARKET & AUCTIONS) ================= */
+  const FACTIONS = ["Private Collector","Scuderia Team","Drift Syndicate","Street Kings","Factory Constructor","Billionaire Enthusiast","Underground Broker","Rally Team"];
+
+  function gameTick() {
+      // 1. Handle Market Timer (Ticks down from 10.0 every 0.1s = 100 ticks)
+      State.marketTimer -= 0.1;
+      let mTimerUI = document.getElementById('market-timer');
+      if(mTimerUI) mTimerUI.innerText = Math.max(0, State.marketTimer).toFixed(1);
+
+      if(State.marketTimer <= 0) {
+          State.marketTimer = 10.0;
+          refreshMarket();
+      }
+
+      // 2. Handle Auctions
+      if(State.auctions.length > 0) {
+          let needsRender = false;
+          
+          for(let i = State.auctions.length - 1; i >= 0; i--) {
+              let a = State.auctions[i];
+              a.timer -= 0.1;
+              needsRender = true;
+
+              // V1.3 FIX: Bidding logic (10% per tick -> snappy and frequent)
+              if(a.timer > 0 && Math.random() < 0.10) {
+                  let faction = FACTIONS[Math.floor(Math.random() * FACTIONS.length)]; 
+                  
+                  // V1.3 FIX: Smoothed normal bid (5% to 15% increase)
+                  let mult = 1.05 + (Math.random() * 0.10); 
+                  
+                  // V1.3 FIX: Bid war spike: 2.0x to 20.0x multiplier
+                  if(Math.random() < 0.015) { 
+                      mult = 2.0 + (Math.random() * 18.0); 
+                      a.log.push(`<span style="color:var(--term-sec);">[BID WAR] Spike multiplier!</span>`);
+                  }
+
+                  let newBid = Math.floor(a.currentBid * mult);
+                  if(newBid <= a.currentBid) newBid = a.currentBid + 1;
+                  a.currentBid = newBid;
+                  
+                  a.log.push(`<span style="color:var(--term-main);">[${faction}] bids $${fmt(a.currentBid)}</span>`);
+                  if(a.log.length > 3) a.log.shift();
+
+                  // Sniper mechanic triggers naturally with the high bid rate
+                  if(a.timer <= 1.0) {
+                      a.timer = 3.0;
+                      a.log.push(`<span style="color:var(--term-red);">[OVERTIME] Timer reset to 3s!</span>`);
+                  }
+              }
+
+              // End Auction
+              if(a.timer <= 0) {
+                  State.credits += a.currentBid; 
+                  toast(`SOLD: ${a.suit.name} for +$${fmt(a.currentBid)}!`);
+                  State.auctions.splice(i, 1); 
+                  updateHUD();
+              }
+          }
+          if(needsRender && document.getElementById('tab-auction').classList.contains('active')) {
+              renderAuctions();
+          }
+      }
+  }
+
+  function initUI() {
+    const tGrid = document.getElementById('tier-breakdown-grid');
+    if (tGrid) {
+      TIERS.forEach(t => { 
+        tGrid.innerHTML += `<div style="background:#000; border:1px solid ${t.color}; padding:6px; border-radius:4px;"><span style="color:${t.color}; font-weight:bold;">${t.name}</span><br><span style="color:var(--text-dim);">Min Val: $${fmt(t.minBase)}</span></div>`; 
+      });
+    }
+
+    refreshMarket(); 
+    updateHUD(); 
+    renderUpgrades();
+    
+    if(globalInterval) clearInterval(globalInterval);
+    globalInterval = setInterval(gameTick, 100);
+  }
+  
+  initUI();
+</script>
+</body>
+</html>
