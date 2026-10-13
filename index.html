@@ -3,20 +3,18 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-<title>Retro Auto! V1.3</title>
+<title>Retro Auto! V1.4</title>
 <style>
   :root {
-    /* Synthwave / Neon Dealer Theme: Black, Teal, Purple */
     --bg-base: #05020a;
     --panel-bg: #0b0514;
     --panel-border: #23113d;
-    --term-main: #00e5ff; /* Neon Teal */
-    --term-sec: #bd00ff; /* Neon Purple */
+    --term-main: #00e5ff;
+    --term-sec: #bd00ff;
     --term-gold: #ffea00; 
     --term-red: #ff2a2a; 
     --text-dim: #735c8c;
     --text-bright: #e6f7ff;
-
     --t0-col: #8c9ba5;
     --t1-col: #4caf50;
     --t2-col: #00b0ff;
@@ -28,88 +26,49 @@
     --t8-col: #ff1744;
     --t9-col: #00e5ff;
   }
-
   * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; -webkit-tap-highlight-color: transparent; }
-
-  html, body {
-    width: 100%; height: 100%; background: var(--bg-base); color: var(--text-bright);
-    display: flex; flex-direction: column; overflow: hidden;
-  }
-
-  /* Scanline / Grid Effect */
-  body::before {
-    content: " "; display: block; position: fixed; top: 0; left: 0; bottom: 0; right: 0;
-    background: linear-gradient(rgba(0, 229, 255, 0.02) 1px, transparent 1px), linear-gradient(90deg, rgba(189, 0, 255, 0.02) 1px, transparent 1px);
-    background-size: 20px 20px; z-index: 998; pointer-events: none;
-  }
-
-  header {
-    flex-shrink: 0; background: #080311; border-bottom: 2px solid var(--term-sec);
-    padding: 10px 12px; display: flex; flex-direction: column; gap: 8px; z-index: 100;
-  }
+  html, body { width: 100%; height: 100%; background: var(--bg-base); color: var(--text-bright); display: flex; flex-direction: column; overflow: hidden; }
+  body::before { content: " "; display: block; position: fixed; top: 0; left: 0; bottom: 0; right: 0; background: linear-gradient(rgba(0, 229, 255, 0.02) 1px, transparent 1px), linear-gradient(90deg, rgba(189, 0, 255, 0.02) 1px, transparent 1px); background-size: 20px 20px; z-index: 998; pointer-events: none; }
+  header { flex-shrink: 0; background: #080311; border-bottom: 2px solid var(--term-sec); padding: 10px 12px; display: flex; flex-direction: column; gap: 8px; z-index: 100; }
   .header-top { display: flex; justify-content: space-between; align-items: center; }
   .os-brand { font-size: 16px; font-weight: 900; color: var(--term-main); text-shadow: 0 0 10px rgba(0, 229, 255, 0.6); letter-spacing: 1px; font-style: italic;}
   .os-brand span { color: var(--term-sec); text-shadow: 0 0 10px rgba(189, 0, 255, 0.6); }
-
   .hud-stats { display: flex; gap: 6px; overflow-x: auto; white-space: nowrap; padding-bottom: 2px; -webkit-overflow-scrolling: touch; }
   .hud-stats::-webkit-scrollbar { display: none; }
   .hud-tag { background: rgba(0,0,0,0.8); border: 1px solid var(--panel-border); padding: 6px 10px; border-radius: 4px; font-size: 11px; flex-shrink: 0; font-weight:bold; }
-  
-  nav {
-    flex-shrink: 0; display: flex; background: var(--panel-bg); border-bottom: 1px solid var(--panel-border);
-    overflow-x: auto; white-space: nowrap; z-index: 99; -webkit-overflow-scrolling: touch;
-  }
+  nav { flex-shrink: 0; display: flex; background: var(--panel-bg); border-bottom: 1px solid var(--panel-border); overflow-x: auto; white-space: nowrap; z-index: 99; -webkit-overflow-scrolling: touch; }
   nav::-webkit-scrollbar { display: none; }
-  .nav-btn {
-    flex: 0 0 auto; padding: 14px 16px; background: transparent; border: none; border-right: 1px solid var(--panel-border);
-    color: var(--text-dim); font-size: 11px; text-transform: uppercase; font-weight: 800; cursor: pointer; letter-spacing: 1px;
-  }
+  .nav-btn { flex: 0 0 auto; padding: 14px 16px; background: transparent; border: none; border-right: 1px solid var(--panel-border); color: var(--text-dim); font-size: 11px; text-transform: uppercase; font-weight: 800; cursor: pointer; letter-spacing: 1px; }
   .nav-btn.active { background: rgba(0, 229, 255, 0.1); color: var(--term-main); border-bottom: 2px solid var(--term-main); }
-
   main { flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch; padding: 12px; padding-bottom: 70px; position:relative; z-index:10; }
   .view-tab { display: none; width: 100%; flex-direction: column; gap: 12px; }
   .view-tab.active { display: flex; }
-
   .panel { background: rgba(11, 5, 20, 0.85); border: 1px solid var(--panel-border); border-radius: 6px; padding: 14px; display: flex; flex-direction: column; }
-  .panel-header {
-    font-size: 13px; font-weight: 900; color: var(--term-sec); text-transform: uppercase; letter-spacing: 1px;
-    padding-bottom: 8px; margin-bottom: 10px; border-bottom: 1px dashed var(--panel-border); display: flex; flex-direction: column; gap: 6px;
-  }
+  .panel-header { font-size: 13px; font-weight: 900; color: var(--term-sec); text-transform: uppercase; letter-spacing: 1px; padding-bottom: 8px; margin-bottom: 10px; border-bottom: 1px dashed var(--panel-border); display: flex; flex-direction: column; gap: 6px; }
   .panel-header-row { display: flex; justify-content: space-between; align-items: center; width: 100%; }
-
-  button.action-btn {
-    background: rgba(0, 229, 255, 0.05); border: 1px solid var(--term-main); color: var(--term-main);
-    padding: 10px 14px; cursor: pointer; text-transform: uppercase; font-size: 11px; font-weight: 900; border-radius: 4px; transition: 0.1s; letter-spacing:0.5px;
-  }
+  button.action-btn { background: rgba(0, 229, 255, 0.05); border: 1px solid var(--term-main); color: var(--term-main); padding: 10px 14px; cursor: pointer; text-transform: uppercase; font-size: 11px; font-weight: 900; border-radius: 4px; transition: 0.1s; letter-spacing:0.5px; }
   button.action-btn:active { background: var(--term-main); color: #000; box-shadow: 0 0 15px var(--term-main); }
   button.action-btn:disabled { border-color: #23113d; color: #4a3366; background: transparent; box-shadow: none; cursor:not-allowed; }
-  
   button.purple-btn { border-color: var(--term-sec); color: var(--term-sec); background: rgba(189, 0, 255, 0.05); }
   button.purple-btn:active { background: var(--term-sec); color: #000; box-shadow: 0 0 15px var(--term-sec); }
-  
   button.red-btn { border-color: var(--term-red); color: var(--term-red); background: rgba(255, 42, 42, 0.05); }
   button.red-btn:active { background: var(--term-red); color: #fff; box-shadow: 0 0 15px var(--term-red); }
-
   button.gold-btn { border-color: var(--term-gold); color: var(--term-gold); background: rgba(255, 234, 0, 0.05); }
   button.gold-btn:active { background: var(--term-gold); color: #000; box-shadow: 0 0 15px var(--term-gold); }
-
+  input.neon-input { background: #000; border: 1px solid var(--term-main); color: var(--term-main); padding: 10px; font-weight: bold; text-transform: uppercase; border-radius: 4px; outline: none; font-family: monospace; }
   .hangar-grid { display: grid; grid-template-columns: 1fr; gap: 12px; width: 100%; }
   @media(min-width: 600px) { .hangar-grid { grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); } }
   .suit-card { background: #05020a; border: 1px solid #23113d; border-radius: 6px; padding: 14px; display: flex; flex-direction: column; gap: 8px; position: relative; }
-  
   .auction-grid { display: grid; grid-template-columns: 1fr; gap: 12px; }
   .auction-slot { background: #05020a; border: 1px solid var(--panel-border); padding: 14px; border-radius: 6px; display: flex; flex-direction: column; gap: 8px; }
   .auction-timer-bg { width: 100%; height: 8px; background: #0b0514; border: 1px solid var(--term-main); border-radius:4px; overflow:hidden;}
   .auction-timer-bar { height: 100%; width: 100%; background: var(--term-main); transition: width 0.1s linear; }
-
   .combat-log { height: 200px; background: #000; border: 1px solid var(--panel-border); border-radius:4px; padding: 10px; overflow-y: auto; font-size: 11px; line-height: 1.5; font-family: monospace; }
   .fraction-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
-
   #toast-rack { position: fixed; bottom: 20px; left: 12px; right: 12px; display: flex; flex-direction: column; gap: 8px; z-index: 1000; pointer-events: none; }
   .toast { background: #0b0514; border-left: 4px solid var(--term-main); color: var(--text-bright); padding: 12px 14px; font-size: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.9); animation: slideIn 0.2s, fadeOut 0.4s 3.2s forwards; pointer-events: auto; font-weight: bold; }
   @keyframes slideIn { from { transform: translateY(40px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
   @keyframes fadeOut { to { opacity: 0; transform: translateY(-10px); } }
-  
   .entity-title { font-weight: 900; font-style: italic; font-size:14px; }
   .stat-block { font-family: monospace; font-size:11px;}
 </style>
@@ -118,7 +77,7 @@
 
 <header>
   <div class="header-top">
-    <div class="os-brand">RETRO <span>AUTO! V1.3</span></div>
+    <div class="os-brand">RETRO <span>AUTO! V1.4</span></div>
     <div style="display:flex; gap: 6px; align-items:center;">
       <button class="action-btn" style="padding:6px 10px; font-size:9px;" onclick="saveGame()">SAVE</button>
       <button class="action-btn" style="padding:6px 10px; font-size:9px;" onclick="loadGame()">LOAD</button>
@@ -141,7 +100,6 @@
 </nav>
 
 <main>
-
   <!-- TAB 1: REVOLVING MARKET -->
   <div id="tab-market" class="view-tab active">
     <div class="panel">
@@ -152,7 +110,6 @@
         </div>
       </div>
       <p style="font-size:11px; color:var(--text-dim); margin-bottom:12px;">5 vehicles drop every 10 seconds. Buy low, hold, and send to the auction blocks.</p>
-      
       <div id="revolving-market-grid" class="hangar-grid"></div>
     </div>
   </div>
@@ -180,7 +137,7 @@
         <div style="display:flex; gap:8px;"><button class="action-btn gold-btn" style="flex:1;" onclick="buyCargo(3, 1)">Import 1 ($500K)</button><button class="action-btn gold-btn" style="flex:1;" onclick="buyCargo(3, 3)">Import 3 ($1.5M)</button></div>
       </div>
       
-      <div class="panel-header">10 Vehicle Classes Overview (80,000 Blueprints)</div>
+      <div class="panel-header">10 Vehicle Classes Overview (320,000 Blueprints)</div>
       <div id="tier-breakdown-grid" style="display:grid; grid-template-columns: 1fr 1fr; gap:6px; font-size:10px; text-align:center;"></div>
     </div>
   </div>
@@ -188,6 +145,14 @@
   <!-- TAB 3: THE GARAGE -->
   <div id="tab-hangar" class="view-tab">
     <div class="panel">
+      <!-- TRADE HUB -->
+      <div class="panel-header" style="color:var(--term-main); border-color:var(--term-main);">Syndicate Trade Hub</div>
+      <p style="font-size:11px; color:var(--text-dim); margin-bottom:10px;">Import offline vehicles from other players using their encrypted trade code.</p>
+      <div style="display:flex; gap:8px; margin-bottom:20px;">
+          <input type="text" id="trade-input" class="neon-input" placeholder="ENTER TRADE CODE" style="flex:1;" maxlength="12">
+          <button class="action-btn" onclick="importCar()">IMPORT</button>
+      </div>
+
       <div class="panel-header">
         <div class="panel-header-row">
           <span>Dealer Garage</span>
@@ -219,8 +184,7 @@
         </div>
       </div>
       <button class="action-btn purple-btn" style="margin-bottom:12px; padding:12px;" onclick="fillAuctions()">Pull from Garage</button>
-      <p style="font-size:11px; color:var(--text-dim); margin-bottom:10px;">Auctions last 20s. Sniping in the last 1s resets the clock to 3s. Bids now start at 90% Base Value!</p>
-      
+      <p style="font-size:11px; color:var(--text-dim); margin-bottom:10px;">Auctions last 20s. Sniping in the last 1s resets the clock to 3s. Bids start at 90% Base Value!</p>
       <div id="auction-idle" style="text-align:center; padding: 30px; color:var(--text-dim); font-size:12px; font-weight:bold;">The auction lanes are empty.</div>
       <div id="auction-board" class="auction-grid"></div>
     </div>
@@ -257,17 +221,16 @@
       <button class="action-btn red-btn" style="padding:14px; font-size:12px;" onclick="prestige()">Expand Franchise (Req: $<span id="prestige-req">100K</span>)</button>
     </div>
   </div>
-
 </main>
 
 <div id="toast-rack"></div>
 
 <script>
-  /* ================= 80,000 PROCEDURAL CAR ROSTER ================= */
-  const PREFIXES = ["Turbo","Aero","Hyper","Eco","V-Spec","Street","Drift","Custom","Stock","Concept","Neon","Midnight","Apex","Phantom","Rogue","Syndicate","Elite","Carbon","Billet","Forged"];
-  const BRANDS = ["Nissota","Honmitsu","Ferrenzo","Lambini","Bugarri","Astoria","Chevell","Fordus","MacLira","Porsh","Toyonda","Audia","Mercia","BWM","Suba","Mitzu","Dodgey","Mazerati","Pagania","Koenigse"];
-  const MODELS = ["Civia","Suprax","Skyline","Nine-Ten","Gallardo","Chironx","Musto","Camara","Vipera","Corvetta","Senato","Diabola","Aventadoro","Huracano","EvoX","WRXy","GTRx","F40x","P1x","LaFerrenzo"];
-  const SUFFIXES = ["GT","RS","Type-R","Type-S","STI","Evo","Nismo","AMG","M","Performante"]; 
+  /* ================= 320,000 PROCEDURAL CAR ROSTER (V1.4) ================= */
+  const PREFIXES = ["Turbo","Aero","Hyper","Eco","V-Spec","Street","Drift","Custom","Stock","Concept","Neon","Midnight","Apex","Phantom","Rogue","Syndicate","Elite","Carbon","Billet","Forged"]; // 20
+  const BRANDS = ["Nissota","Honmitsu","Ferrenzo","Lambini","Bugarri","Astoria","Chevell","Fordus","MacLira","Porsh","Toyonda","Audia","Mercia","BWM","Suba","Mitzu","Dodgey","Mazerati","Pagania","Koenigse","Volva","Mazdae","Hunda","Pontia","Plymo","Chrysla","Cadilla","Linc","Bentu","Rolla","Leva","Saabo","Alfo","Fia","Lancia","Astonia","Lotu","Suzuk","Tarraco","Tatra"]; // 40
+  const MODELS = ["Civia","Suprax","Skyline","Nine-Ten","Gallardo","Chironx","Musto","Camara","Vipera","Corvetta","Senato","Diabola","Aventadoro","Huracano","EvoX","WRXy","GTRx","F40x","P1x","LaFerrenzo","Imprezo","Sentra","Celico","MR2x","NSXx","Testaross","Countach","Murcielago","Veyrono","Jesko","Agerax","Regera","Challeng","Chargo","Dart","Demon","Hellcat","GT500","Raptora","Broncox"]; // 40
+  const SUFFIXES = ["GT","RS","Type-R","Type-S","STI","Evo","Nismo","AMG","M","Performante"]; // 10
 
   const TIERS = [
     { tier: 1, name: "Class I: Beater", color: "var(--t0-col)", mult: 1.0, minBase: 500 },
@@ -282,6 +245,16 @@
     { tier: 10, name: "Class X: Horizon Apex", color: "var(--t9-col)", mult: 5500.0, minBase: 2750000 }
   ];
 
+  /* 48 Bidder Factions */
+  const FACTIONS = [
+      "Private Collector","Scuderia Team","Drift Syndicate","Street Kings","Factory Constructor","Billionaire Enthusiast","Underground Broker","Rally Team",
+      "Cartel Boss","Hedge Fund Manager","Tech Mogul","Oil Baron","Royal Prince","Casino Owner","Triad Enforcer","Mafia Don",
+      "Yakuza Oyabun","Crypto Whale","Ghost Racer","Midnight Club","Tuning Shop","Chop Shop Fence","Smuggler Ring","Import Exporter",
+      "Vintage Restorer","Boutique Dealer","Exotic Rental Fleet","Movie Director","Pop Star","Pro Athlete","Influencer","Foreign Diplomat",
+      "Shadow Oligarch","Wealthy Heir","Museum Curator","Secret Society","Black Lotus Cartel","Apex Predators Team","Bounty Hunter","Warlord",
+      "Mercenary Captain","Corporate Exec","Venture Capitalist","Outlaw Club","Rebel Leader","Corrupt Official","Arms Dealer","Art Thief"
+  ];
+
   let State = {
     credits: 5000,
     prestige: 0,
@@ -290,10 +263,7 @@
     marketCars: [],
     marketTimer: 10.0,
     auctions: [],
-    upgrades: {
-        valueLvl: 0,
-        discountLvl: 0
-    }
+    upgrades: { valueLvl: 0, discountLvl: 0 }
   };
 
   let globalInterval = null;
@@ -314,6 +284,11 @@
     rack.appendChild(el); setTimeout(() => el.remove(), 3200);
   }
 
+  function pad(n, width) {
+    n = n + '';
+    return n.length >= width ? n : new Array(width - n.length + 1).join('0') + n;
+  }
+
   function godMode() { 
     State.credits += 1000000000; 
     toast("CARTEL BOSS OVERRIDE: +$1 BILLION"); 
@@ -321,12 +296,12 @@
   }
 
   function saveGame() {
-    localStorage.setItem('retroAutoV1_3', JSON.stringify(State));
+    localStorage.setItem('retroAutoV1_4', JSON.stringify(State));
     toast("Dealer ledger saved.");
   }
   
   function loadGame() {
-    let saved = localStorage.getItem('retroAutoV1_3');
+    let saved = localStorage.getItem('retroAutoV1_4');
     if(saved) {
       State = JSON.parse(saved);
       if(!State.marketCars) State.marketCars = [];
@@ -337,6 +312,55 @@
     } else {
       toast("No save data found.");
     }
+  }
+
+  /* ================= OFFLINE TRADE SYSTEM ================= */
+  function copyTradeCode(uid) {
+    let car = State.hangar.find(s => s.uid === uid);
+    if(!car) return;
+    
+    // V1.4 Blueprint: 1 + Tier(1) + Pref(2) + Brand(2) + Model(2) + Suff(1) + BaseRoll(3) = 12 digits max
+    let rawStr = "1" + car.tierIndex + pad(car.pIdx, 2) + pad(car.bIdx, 2) + pad(car.mIdx, 2) + car.sIdx + pad(car.baseRoll, 3);
+    let compressedCode = parseInt(rawStr, 10).toString(36).toUpperCase();
+    
+    navigator.clipboard.writeText(compressedCode).then(() => {
+        toast(`Copied Trade Code: ${compressedCode}`);
+    }).catch(() => {
+        toast("Clipboard access denied. Code: " + compressedCode);
+    });
+  }
+
+  function importCar() {
+    let inputEl = document.getElementById('trade-input');
+    if(!inputEl) return;
+    let code = inputEl.value.trim().toLowerCase();
+    if(!code) return;
+
+    let decodedNum = parseInt(code, 36);
+    if(isNaN(decodedNum)) { toast("Invalid code format."); return; }
+    
+    let rawStr = decodedNum.toString(10);
+    if(rawStr.length !== 12 || rawStr.charAt(0) !== '1') { toast("Corrupted Trade Data."); return; }
+
+    let tIdx = parseInt(rawStr.substring(1, 2), 10);
+    let pIdx = parseInt(rawStr.substring(2, 4), 10);
+    let bIdx = parseInt(rawStr.substring(4, 6), 10);
+    let mIdx = parseInt(rawStr.substring(6, 8), 10);
+    let sIdx = parseInt(rawStr.substring(8, 9), 10);
+    let baseRoll = parseInt(rawStr.substring(9, 12), 10);
+
+    // V1.4 Updated Bounds Check
+    if(tIdx < 0 || tIdx > 9 || pIdx < 0 || pIdx > 19 || bIdx < 0 || bIdx > 39 || mIdx < 0 || mIdx > 39 || sIdx < 0 || sIdx > 9 || baseRoll > 499) {
+        toast("Vehicle data out of bounds."); return;
+    }
+
+    let newCar = createCar({tIdx, pIdx, bIdx, mIdx, sIdx, baseRoll});
+    State.hangar.push(newCar);
+    
+    inputEl.value = '';
+    toast(`Successfully Imported: ${newCar.name}`);
+    updateHUD();
+    renderHangar();
   }
 
   /* ================= PROCEDURAL GENERATION ================= */
@@ -352,15 +376,27 @@
       return 0.8 * (1.0 - discount); 
   }
 
-  function createCar(tIdx) {
-      let p = PREFIXES[Math.floor(Math.random() * PREFIXES.length)];
-      let b = BRANDS[Math.floor(Math.random() * BRANDS.length)];
-      let m = MODELS[Math.floor(Math.random() * MODELS.length)];
-      let s = SUFFIXES[Math.floor(Math.random() * SUFFIXES.length)];
+  function createCar(inputData) {
+      let pIdx, bIdx, mIdx, sIdx, tIdx, baseRoll;
 
+      if (typeof inputData === 'object') {
+          ({tIdx, pIdx, bIdx, mIdx, sIdx, baseRoll} = inputData);
+      } else {
+          tIdx = inputData;
+          pIdx = Math.floor(Math.random() * PREFIXES.length);
+          bIdx = Math.floor(Math.random() * BRANDS.length);
+          mIdx = Math.floor(Math.random() * MODELS.length);
+          sIdx = Math.floor(Math.random() * SUFFIXES.length);
+          baseRoll = Math.floor(Math.random() * 500);
+      }
+
+      let p = PREFIXES[pIdx];
+      let b = BRANDS[bIdx];
+      let m = MODELS[mIdx];
+      let s = SUFFIXES[sIdx];
       let tData = TIERS[tIdx];
 
-      let rawBase = 500 + Math.floor(Math.random() * 500);
+      let rawBase = 500 + baseRoll;
       let baseVal = Math.floor(rawBase * tData.mult);
       
       let valMult = getValueMultiplier();
@@ -374,7 +410,8 @@
           tierName: tData.name,
           tierColor: tData.color,
           value: finalValue,
-          cost: marketCost
+          cost: marketCost,
+          pIdx: pIdx, bIdx: bIdx, mIdx: mIdx, sIdx: sIdx, baseRoll: baseRoll
       };
   }
 
@@ -445,10 +482,7 @@
   function buyCar(idx) {
       let c = State.marketCars[idx];
       if(!c) return;
-      if(State.credits < c.cost) {
-          toast("Insufficient funds.");
-          return;
-      }
+      if(State.credits < c.cost) { toast("Insufficient funds."); return; }
       State.credits -= c.cost;
       State.hangar.push(c);
       State.marketCars.splice(idx, 1);
@@ -515,6 +549,7 @@
           <span class="stat-block" style="font-size:12px; color:var(--term-main); font-weight:bold;">VAL: $${fmt(s.value)}</span>
           <div style="display:flex; flex-wrap:wrap; gap:6px; justify-content:flex-end;">
             <button class="action-btn purple-btn" onclick="initAuction('${s.uid}', event)">Auction</button>
+            <button class="action-btn" onclick="copyTradeCode('${s.uid}')">Code</button>
             <button class="action-btn red-btn" onclick="sellCar('${s.uid}', event)">Wholesale</button>
           </div>
         </div>
@@ -558,13 +593,7 @@
     let suit = State.hangar[sIdx]; 
     State.hangar.splice(sIdx, 1);
 
-    State.auctions.push({ 
-        suit: suit, 
-        baseVal: suit.value, 
-        timer: 20.0, 
-        currentBid: Math.floor(suit.value * 0.90), // V1.3 FIX: Start bidding at 90% value
-        log: [] 
-    });
+    State.auctions.push({ suit: suit, baseVal: suit.value, timer: 20.0, currentBid: Math.floor(suit.value * 0.90), log: [] });
     updateHUD(); 
     renderAuctions(); 
     toast("Sent to Auction Block.");
@@ -580,13 +609,7 @@
     toList.forEach(s => {
       let idx = State.hangar.findIndex(x => x.uid === s.uid); 
       State.hangar.splice(idx, 1);
-      State.auctions.push({ 
-          suit: s, 
-          baseVal: s.value, 
-          timer: 20.0, 
-          currentBid: Math.floor(s.value * 0.90), // V1.3 FIX: Start bidding at 90% value
-          log: [] 
-      });
+      State.auctions.push({ suit: s, baseVal: s.value, timer: 20.0, currentBid: Math.floor(s.value * 0.90), log: [] });
     });
     updateHUD(); 
     renderHangar(); 
@@ -667,27 +690,19 @@
 
   function prestige() {
       let pReq = 100000 * Math.pow(10, State.prestige);
-      if(State.credits < pReq) {
-          toast(`You need $${fmt(pReq)} to expand the franchise.`);
-          return;
-      }
-      
+      if(State.credits < pReq) { toast(`You need $${fmt(pReq)} to expand the franchise.`); return; }
       State.prestige++;
       State.credits = 5000;
       State.hangar = [];
       State.auctions = [];
       refreshMarket();
-      
       toast(`FRANCHISE EXPANDED! Level ${State.prestige}. Global Multipliers Increased!`);
       updateHUD();
       setTab('market');
   }
 
   /* ================= GAME LOOP (MARKET & AUCTIONS) ================= */
-  const FACTIONS = ["Private Collector","Scuderia Team","Drift Syndicate","Street Kings","Factory Constructor","Billionaire Enthusiast","Underground Broker","Rally Team"];
-
   function gameTick() {
-      // 1. Handle Market Timer (Ticks down from 10.0 every 0.1s = 100 ticks)
       State.marketTimer -= 0.1;
       let mTimerUI = document.getElementById('market-timer');
       if(mTimerUI) mTimerUI.innerText = Math.max(0, State.marketTimer).toFixed(1);
@@ -697,23 +712,16 @@
           refreshMarket();
       }
 
-      // 2. Handle Auctions
       if(State.auctions.length > 0) {
           let needsRender = false;
-          
           for(let i = State.auctions.length - 1; i >= 0; i--) {
               let a = State.auctions[i];
               a.timer -= 0.1;
               needsRender = true;
 
-              // V1.3 FIX: Bidding logic (10% per tick -> snappy and frequent)
               if(a.timer > 0 && Math.random() < 0.10) {
                   let faction = FACTIONS[Math.floor(Math.random() * FACTIONS.length)]; 
-                  
-                  // V1.3 FIX: Smoothed normal bid (5% to 15% increase)
                   let mult = 1.05 + (Math.random() * 0.10); 
-                  
-                  // V1.3 FIX: Bid war spike: 2.0x to 20.0x multiplier
                   if(Math.random() < 0.015) { 
                       mult = 2.0 + (Math.random() * 18.0); 
                       a.log.push(`<span style="color:var(--term-sec);">[BID WAR] Spike multiplier!</span>`);
@@ -726,14 +734,12 @@
                   a.log.push(`<span style="color:var(--term-main);">[${faction}] bids $${fmt(a.currentBid)}</span>`);
                   if(a.log.length > 3) a.log.shift();
 
-                  // Sniper mechanic triggers naturally with the high bid rate
                   if(a.timer <= 1.0) {
                       a.timer = 3.0;
                       a.log.push(`<span style="color:var(--term-red);">[OVERTIME] Timer reset to 3s!</span>`);
                   }
               }
 
-              // End Auction
               if(a.timer <= 0) {
                   State.credits += a.currentBid; 
                   toast(`SOLD: ${a.suit.name} for +$${fmt(a.currentBid)}!`);
@@ -741,9 +747,7 @@
                   updateHUD();
               }
           }
-          if(needsRender && document.getElementById('tab-auction').classList.contains('active')) {
-              renderAuctions();
-          }
+          if(needsRender && document.getElementById('tab-auction').classList.contains('active')) { renderAuctions(); }
       }
   }
 
@@ -758,7 +762,6 @@
     refreshMarket(); 
     updateHUD(); 
     renderUpgrades();
-    
     if(globalInterval) clearInterval(globalInterval);
     globalInterval = setInterval(gameTick, 100);
   }
